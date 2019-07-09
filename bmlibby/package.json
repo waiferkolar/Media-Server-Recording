@@ -1,8 +1,8 @@
 {
-  "name": "Media-Server",
+  "name": "bmlibby",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^8.0.0",
-    "qr-image": "^3.2.0"
+    "bcrypt": "^3.0.6"
   }
 }
