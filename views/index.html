@@ -1,18 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Index Page</title>
+
+    <style>
+        .holders {
+            width: 500px;
+            margin: 20px auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .loginAction {
+            width: inherit;
+        }
+
+        input.nameinput {
+            width: 480px;
+            height: 45px;
+        }
+
+        button#login {
+            width: 100px;
+            margin-top: 5px;
+            height: 45px;
+            float: right;
+            margin-right: 15px;
+        }
+
+        .chatWrapper {
+            width: inherit;
+            height: 500px;
+            border: 1px solid #ddd;
+        }
+
+        input#message {
+            width: 400px;
+            height: 43px;
+            margin-top: 1px;
+        }
+
+        button#send {
+            width: 80px;
+            height: 45px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        input {
+            padding-left: 10px;
+            font-size: 18px;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Hello Index Page</h1>
+    <div class="loginHolder holders">
+        <h1>Login</h1>
+        <div class="loginAction">
+            <input id="name" class="nameinput" /><br>
+            <button id="login">Login</button>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div class="chatHolder holders hide">
+        <h1>BM Chat</h1>
+        <div class="chatWrapper">
+            <p class="chatMsg"></p>
+        </div>
+        <div class="chatAction">
+            <input id="message" />
+            <button id="send">Send</button>
+        </div>
+    </div>
 
-    <img src="imgs/php.png" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = io.connect();
+
+        let loginHolder = document.querySelector('.loginHolder');
+        let chatHolder = document.querySelector('.chatHolder');
+        let name = document.querySelector('#name');
+        let login = document.querySelector('#login');
+        let message = document.querySelector('#message');
+        let send = document.querySelector('#send');
+        let chatMsg = document.querySelector('.chatMsg');
+
+        login.addEventListener('click', loginNow);
+        send.addEventListener('click', sendMsg);
+
+        function loginNow() {
+            socket.emit('login', name.value);
+        }
+
+        function sendMsg() {
+            socket.emit('msg', message.value);
+            message.value = "";
+        }
+
+        socket.on('login-success', data => {
+            if (data) {
+                loginHolder.classList.add('hide');
+                chatHolder.classList.remove('hide');
+            }
+        });
+        socket.on('income-msg', msg => {
+            let data = chatMsg.innerText;
+            chatMsg.innerText = data + "\n" + msg;
+        })
+
+    </script>
+
 </body>
 
 </html>
-
-
