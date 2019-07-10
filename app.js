@@ -13,34 +13,27 @@ app.use(express.static(path.join(__dirname, 'assets')));
 app.get('/', (req, res) => {
     res.render('index');
 })
-/** 
-    #sending to All Users
-    io.emit('key','val');
 
-    #send message only to sender-client
-    socket.emit('message', 'check this');
+let userMap = new Map();
+let room1 = "public";
+let room2 = "private";
 
-    #send to all listeners except sender
-    socket.broadcast.emit("chat-data",username + " : " + data);
-
-    #send message to certain user
-    io.sockets.connected[clients[1]].emit("chat-data",username + " : " + data);
-
-    #send to specific socket-id (specific user)
-    socket.broadcast.to(socketid).emit("chat-data",username + " : " + data);
-    io.sockets.connected[socket.id].emit('login-success', true)
-
-    // Socket , io emit 
-    // Socket Room 
-    // namespace
-*/
 io.sockets.on('connection', (socket) => {
     socket.on("login", data => {
         socket.username = data;
-        socket.broadcast.to(socket.id).emit('login-success',true);
+        userMap.set(socket.username, socket.id);
+        if (data == 'w' || data == 'x') {
+            socket.join(room1);
+            socket.userroom = room1;
+        } else {
+            socket.join(room2);
+            socket.userroom = room2;
+        }
+        socket.emit('login-success', true);
     });
     socket.on('msg', data => {
-        io.emit('income-msg', socket.username + " : " + data);
+        io.in(socket.userroom).emit('income-msg', socket.username + " : " + data);
+        // io.emit('income-msg', socket.username + " : " + data);
     })
 })
 
