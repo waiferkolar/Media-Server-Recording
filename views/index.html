@@ -82,9 +82,14 @@
         </div>
     </div>
 
+    <button id="gameBtn">Game Btn</button>
+    <button id="bookBtn">Book Btn</button>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         let socket = io.connect();
+        let gameSocket = io('/game');
+        let bookSocket = io('/book');
 
         let loginHolder = document.querySelector('.loginHolder');
         let chatHolder = document.querySelector('.chatHolder');
@@ -93,9 +98,21 @@
         let message = document.querySelector('#message');
         let send = document.querySelector('#send');
         let chatMsg = document.querySelector('.chatMsg');
+        let gameBtn = document.querySelector('#gameBtn');
+        let bookBtn = document.querySelector('#bookBtn');
+
 
         login.addEventListener('click', loginNow);
         send.addEventListener('click', sendMsg);
+        gameBtn.addEventListener('click', gameStartNow);
+        bookBtn.addEventListener('click', bookStartNow);
+
+        function gameStartNow() {
+            gameSocket.emit('gamestart', 'Game Socket is Starting!');
+        }
+        function bookStartNow() {
+            bookSocket.emit('bookstart', 'Book Socket is Starting!');
+        }
 
         function loginNow() {
             socket.emit('login', name.value);

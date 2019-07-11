@@ -18,6 +18,20 @@ let userMap = new Map();
 let room1 = "public";
 let room2 = "private";
 
+let nspGame = io.of('/game');
+let nspBook = io.of('/book');
+
+nspGame.on('connection', (socket) => {
+    socket.on('gamestart', data => {
+        console.log(data);
+    })
+});
+nspBook.on('connection', (socket) => {
+    socket.on('bookstart', data => {
+        console.log(data);
+    })
+});
+
 io.sockets.on('connection', (socket) => {
     socket.on("login", data => {
         socket.username = data;
