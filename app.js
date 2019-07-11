@@ -1,3 +1,4 @@
+
 const client = require('mongodb').MongoClient;
 const url = "mongodb://localhost:27017/ourdb";
 
@@ -18,7 +19,12 @@ let insertData = (obj) => {
             console.log("Something wrong ", err);
         } else {
             let dbo = inst.db('ourdb');
-            dbo.collection('users').insertMany(obj, (err, res) => errorChecker(err, res));
+            dbo.collection('users').findOne({}, (err, res) => {
+                obj.forEach((ob) => {
+                    ob['userId'] = res._id;
+                    dbo.collection('orders').insertOne(ob, (err, res) => errorChecker(err, res));
+                })
+            });
         }
     })
 }
@@ -31,7 +37,7 @@ let findUser = () => {
             let dbo = inst.db('ourdb');
             // find One
             //dbo.collection('users').findOne({}, (err, res) => errorChecker(err, res));
-            // find ALl 
+            // find ALl
             //dbo.collection('users').find({}).toArray((err, res) => errorChecker(err, res));
             // find By Query
             //let query = { age: 21 };
@@ -83,7 +89,6 @@ let updateUser = () => {
     })
 }
 
-updateUser();
 // insertData(
 //     [
 //         { name: 'Mg Mg', email: 'mgmg@gmail.com', password: '123', age: 21 },
@@ -95,6 +100,39 @@ updateUser();
 //     ]
 // );
 
+// insertData(
+//     [
+//         { userId: 'user_id', name: 'computer', price: 12000, count: 2 },
+//         { userId: 'user_id', name: 'Keyboard', price: 12000, count: 4 },
+//         { userId: 'user_id', name: 'mouser', price: 12000, count: 3 },
+//         { userId: 'user_id', name: 'printer', price: 12000, count: 3 },
+//         { userId: 'user_id', name: 'power-supply', price: 12000, count: 1 },
+//     ]
+// );
+
+let joinTable = () => {
+    client.connect(url, { useNewUrlParser: true }, (err, inst) => {
+        if (err) {
+            console.log("Something wrong ", err);
+        } else {
+            let dbo = inst.db('ourdb');
+            dbo.collection('users').aggregate([
+                {
+                    $lookup: {
+                        from: 'orders',
+                        localField: "_id",
+                        foreignField: "userId",
+                        as: "user_orders"
+                    }
+                }
+            ]).toArray((err, res) => errorChecker(err, res));
+        }
+
+    });
+};
+
+joinTable();
+
 let errorChecker = (err, res) => {
     if (err) {
         console.log("Something wrong ", err);
@@ -102,7 +140,3 @@ let errorChecker = (err, res) => {
         console.log("We are good to go ", res);
     }
 };
-
-
-
-
